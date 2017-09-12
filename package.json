@@ -1,0 +1,19 @@
+{
+  "name": "react-sp-demo",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://stateca.sharepoint.com/sites/DevTest/DASandbox/SPFX/SPA/",
+  "dependencies": {
+    "office-ui-fabric-react": "^4.41.0",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-scripts": "1.0.13",
+    "sp-pnp-js": "^2.0.8"
+  },
+  "scripts": {
+    "start": "set HTTPS=true&&react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

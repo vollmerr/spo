@@ -1,0 +1,88 @@
+/*
+ * Overrides for styles that sharepointhas precedence over
+ * Uses office-ui-fabric-react styles as overrides
+ * All styles prefixed with #root to not change sharepoints styles
+ */
+#root input[type=text] {
+    border: none;
+    padding: 0 12px 0 12px;
+}
+
+#root input[type=button][disabled],
+#root input[type=reset][disabled],
+#root input[type=submit][disabled],
+#root button[disabled],
+#root input[type=button]:hover,
+#root input[type=reset]:hover,
+#root input[type=submit]:hover,
+#root button:hover {
+    border-color: transparent;
+}
+
+#root a.ms-Button,
+#root a.ms-Button:active,
+#root a.ms-Button:hover,
+#root a.ms-Button:visited {
+    text-decoration: none;
+}
+
+#root a.ms-Button.ms-Button--primary,
+#root a.ms-Button.ms-Button--primary:active,
+#root a.ms-Button.ms-Button--primary:hover,
+#root a.ms-Button.ms-Button--primary:visited {
+    color: #fff;
+}
+
+#root a.ms-Button.ms-Button--default,
+#root a.ms-Button.ms-Button--default:active,
+#root a.ms-Button.ms-Button--default:hover,
+#root a.ms-Button.ms-Button--default:visited {
+    color: #000;
+}
+
+/**
+ * Basic container
+ */
+#root {
+  max-width: 100%;
+  margin: auto;
+  padding: 15px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+#search {
+  margin: 15px 0;
+}
+
+@media (min-width: 576px) {
+}
+
+@media (min-width: 768px) {
+  #search { width: 100%; }
+}
+
+@media (min-width: 992px) {
+  #search { width: 50%; }
+}
+
+@media (min-width: 1200px) {
+  #search { width: 40%; }
+}
+
+/**
+ * Remove left navigation and top ribbon (title, logo, etc)
+ */
+#sideNavBox,
+#s4-titlerow {
+    display: none !important;
+}
+
+#contentBox {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#WebPartWPQ2_ChromeTitle {
+  display: none !important;
+}

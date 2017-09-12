@@ -1,0 +1,32 @@
+{
+  "docs": {
+    "listTitle": "Documents",
+    "title": {
+      "key": "Title",
+      "name": "Title",
+      "ariaLabel": "Title of document"
+    },
+    "dateRead": {
+      "key": "Date_x002d_read",
+      "name": "Date Read",
+      "ariaLabel": "Date document was read."
+    },
+    "dateAck": {
+      "key": "Date_x002d_Ack",
+      "name": "Date Acknowledged",
+      "ariaLabel": "Date document was acknowledged."
+    },
+    "hasRead": {
+      "key": "Has_x002d_read"
+    },
+    "hasAck": {
+      "key": "Has_x002d_Ack"
+    },
+    "docId": {
+      "key": "DocID"
+    }
+  },
+  "ack": {
+    "listTitle": "Ack_list"
+  }
+}
