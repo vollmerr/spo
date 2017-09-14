@@ -43,7 +43,7 @@
 /**
  * Basic container
  */
-#root {
+/* #root {
   max-width: 100%;
   margin: auto;
   padding: 15px;
@@ -68,7 +68,7 @@
 
 @media (min-width: 1200px) {
   #search { width: 40%; }
-}
+} */
 
 /**
  * Remove left navigation and top ribbon (title, logo, etc)

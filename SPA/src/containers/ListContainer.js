@@ -6,9 +6,8 @@ import lists from '../api/lists';
 import Search from '../components/Search';
 import List from '../components/List';
 import ListButtons from '../components/ListButtons';
-import Acknowledgment from '../components/Acknowledgment';
 
-class App extends Component {
+class ListContainer extends Component {
   constructor() {
     super();
     this.state = {
@@ -20,58 +19,6 @@ class App extends Component {
       columns: [],
       acknowledgeHidden: true,
     };
-    // FOR TESTING (pnp available in console)
-    sp.globalPnp();
-  }
-
-  componentDidMount() {
-    this.loadAckList()
-      .then(this.loadDocs)
-      .then(this.setColumns)
-      .then(this.mapDocLinks);
-  }
-
-  /**
-   * Loads a sharepiont list of the current users
-   * acknowledgments and readings requried
-   * These are the items displayed in the list
-   */
-  loadAckList = () => (
-    sp.getUser()
-      .then(user => (
-        sp.listItems(
-          lists.ack.listTitle,
-          sp.admin,
-        )
-          .filter(`UserIdentity eq '${user.Title}'`)
-          .orderBy(lists.docs.dateRead.key)
-          .orderBy(lists.docs.dateAck.key)
-          .get()
-      ))
-      .then(items => this.setState({ items, filteredItems: items }))
-      .catch(err => console.error(err))
-  )
-
-  /**
-   * Loads a sharepoint list of documents
-   * These are all documents needing approval
-   */
-  loadDocs = () => (
-    sp.listItems(lists.docs.listTitle, sp.admin)
-      .get()
-      .then(docs => this.setState({ docs }))
-      .catch(err => console.error(err))
-  )
-
-  /**
-   * Maps the document links to an href attribute on items
-   */
-  mapDocLinks = () => {
-    const items = this.state.items.map(item => ({
-      ...item,
-      href: this.state.docs.find(x => x.Id === item[lists.docs.docId.key]).ServerRedirectedEmbedUrl,
-    }));
-    this.setState({ items, filteredItems: items });
   }
 
   /**
@@ -228,68 +175,6 @@ class App extends Component {
     });
   }
 
-  /**
-   * Handles upading a sharepoint item with data
-   * @param {object} data   - data to update in item
-   * @param {number} id     - id of item to update
-   * @return {promise}
-   */
-  handleUpdateItem = (data, id) => (
-    sp.listItems(lists.ack.listTitle, sp.admin)
-      .getById(id)
-      .update(data)
-      .then(() => {
-        const items = [...this.state.items];
-        const index = items.findIndex(x => x.Id === id);
-        items[index] = {
-          ...items[index],
-          ...data,
-        };
-
-        this.setState({ items, filteredItems: items });
-      })
-      .catch(err => console.error(err))
-  )
-
-  /**
-   * Handles clicking the 'Read' button
-   * @param {object} item   - item user is reading
-   */
-  handleClickRead = (item) => {
-    if (!item[lists.docs.hasRead.key]) {
-      const data = {
-        [lists.docs.dateRead.key]: new Date().toISOString(),
-        [lists.docs.hasRead.key]: true,
-      };
-      this.handleUpdateItem(data, item.Id);
-    }
-  }
-
-  /**
-   * Handles clicking the 'Acknowledge' button
-   * from withing the acknowledgment modal
-   */
-  handleClickAck = () => {
-    const data = {
-      [lists.docs.dateAck.key]: new Date().toISOString(),
-      [lists.docs.hasAck.key]: true,
-    };
-
-    this.handleUpdateItem(data, this.state.currentItem)
-      .then(this.handleToggleAck);
-  }
-
-  /**
-   * Handles toggling the acknowledgment modal
-   * @param {object} item   - item user is acknowledging
-   */
-  handleToggleAck = (item) => {
-    const id = item ? item.Id : null;
-    this.setState({
-      acknowledgeHidden: !this.state.acknowledgeHidden,
-      currentItem: id,
-    });
-  }
 
   /**
    * Handles typing in the search bar
@@ -316,17 +201,26 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div className="ms-Grid">
+        <div className="ms-Grid-row">
+          <div className="ms-Grid-col ms-u-sm6">
+            <h2>{this.props.title}</h2>
+          </div>
 
-        <h1>SPA</h1>
+          <div className="ms-Grid-col ms-u-sm6">
+            <Search onChange={this.handleSearch} />
+          </div>
+        </div>
 
-        <Search onChange={this.handleSearch} />
-
-        <List
-          items={this.state.filteredItems}
-          columns={this.state.columns}
-          onColumnHeaderClick={this.handleClickColumn}
-        />
+        <div className="ms-Grid-row">
+          <div className="ms-Grid-col ms-u-sm12">
+            <List
+              items={this.state.filteredItems}
+              columns={this.state.columns}
+              onColumnHeaderClick={this.handleClickColumn}
+            />
+          </div>
+        </div>
 
         <Acknowledgment
           hidden={this.state.acknowledgeHidden}
