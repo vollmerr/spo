@@ -4,9 +4,9 @@ import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import lists from '../api/lists';
 
 const ButtonAck = ({ item, onClick }) => (
-  !item[lists.docs.hasAck.key] ?
+  !item[lists.ack.hasAck.key] ?
     <PrimaryButton
-      disabled={!item[lists.docs.hasRead.key]}
+      disabled={!item[lists.ack.hasRead.key]}
       onClick={onClick}
     >
       Acknowledge

@@ -43,7 +43,7 @@
 /**
  * Basic container
  */
-/* #root {
+#root {
   max-width: 100%;
   margin: auto;
   padding: 15px;
@@ -51,6 +51,7 @@
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
 }
+/*
 #search {
   margin: 15px 0;
 }

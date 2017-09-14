@@ -1,110 +1,149 @@
 import React, { Component } from 'react';
 
+import { SearchBox } from 'office-ui-fabric-react/lib/SearchBox';
+
 import * as sp from '../api/sp';
 import lists from '../api/lists';
 
-import Search from '../components/Search';
 import List from '../components/List';
 import ListButtons from '../components/ListButtons';
+import Acknowledgment from '../components/Acknowledgment';
 
 class ListContainer extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       currentItem: 0,
-      filteredItems: [],
+      filteredItems: this.props.items,
       filteredValue: '',
-      items: [],
-      docs: [],
-      columns: [],
+      items: this.props.items,
       acknowledgeHidden: true,
+      columns: [
+        {
+          ariaLabel: "Column operations for file type.   ",
+          className: "od-DetailsRow-cell--FileIcon",
+          columnActionsMode: 1,
+          fieldName: "type",
+          headerClassName: "od-DetailsHeader-cell--FileIcon",
+          iconClassName: "ms-Icon--Page od-DetailsListHeader-FileTypeIcon",
+          isIconOnly: true,
+          key: "type",
+          maxWidth: 16,
+          minWidth: 16,
+          name: "Type",
+          onColumnClick: () => alert('handling col click for type'),
+        },
+        {
+          key: lists.ack.title.key,
+          fieldName: lists.ack.title.key,
+          name: lists.ack.title.name,
+          ariaLabel: lists.ack.title.ariaLabel,
+          columnActionsMode: 2,
+          maxWidth: 400,
+          minWidth: 200,
+          isSorted: false,
+          isSortedDescending: false,
+          isResizable: true,
+          isPadded: true,
+          data: {
+            type: 'string',
+          },
+        },
+        {
+          key: lists.ack.dateRead.key,
+          fieldName: lists.ack.dateRead.key,
+          name: lists.ack.dateRead.name,
+          ariaLabel: lists.ack.dateRead.ariaLabel,
+          columnActionsMode: 2,
+          maxWidth: 200,
+          minWidth: 100,
+          isSorted: true,
+          isSortedDescending: true,
+          isResizable: true,
+          isPadded: true,
+          data: {
+            type: 'date',
+          },
+          onRender: item => item[lists.ack.dateRead.key].slice(0, 10),
+        },
+        {
+          key: lists.ack.dateAck.key,
+          fieldName: lists.ack.dateAck.key,
+          name: lists.ack.dateAck.name,
+          ariaLabel: lists.ack.dateAck.ariaLabel,
+          columnActionsMode: 2,
+          maxWidth: 200,
+          minWidth: 100,
+          isSorted: true,
+          isSortedDescending: true,
+          isResizable: true,
+          isPadded: true,
+          data: {
+            type: 'date',
+          },
+          onRender: item => item[lists.ack.dateAck.key].slice(0, 10),
+        },
+        {
+          key: 'buttons',
+          name: '',
+          maxWidth: 250,
+          minWidth: 200,
+          columnActionsMode: 1,
+          isPadded: true,
+          onRender: item => (
+            <ListButtons
+              key={item.id}
+              item={item}
+              onClickRead={() => this.handleClickRead(item)} // TODO!
+              onClickAck={() => this.handleToggleAck(item)} // TODO!
+            />
+          ),
+        },
+      ],
     };
   }
 
-  /**
-   * TODO: MOVE OUTSIDE (how handle bind this in funcs)
-   * Handles setting up the column objects
-   */
-  setColumns = () => {
-    const columns = [
-      {
-        ariaLabel: "Column operations for file type.   ",
-        className: "od-DetailsRow-cell--FileIcon",
-        columnActionsMode: 2,
-        fieldName: "type",
-        headerClassName: "od-DetailsHeader-cell--FileIcon",
-        iconClassName: "ms-Icon--Page od-DetailsListHeader-FileTypeIcon",
-        isIconOnly: true,
-        key: "type",
-        maxWidth: 16,
-        minWidth: 16,
-        name: "Type",
-        onColumnClick: () => alert('handling col click for type'),
-      },
-      {
-        key: lists.docs.title.key,
-        fieldName: lists.docs.title.key,
-        name: lists.docs.title.name,
-        ariaLabel: lists.docs.title.ariaLabel,
-        columnActionsMode: 2,
-        maxWidth: 400,
-        minWidth: 200,
-        isSorted: false,
-        isSortedDescending: false,
-        isResizable: true,
-        data: {
-          type: 'string',
-        },
-      },
-      {
-        key: lists.docs.dateRead.key,
-        fieldName: lists.docs.dateRead.key,
-        name: lists.docs.dateRead.name,
-        ariaLabel: lists.docs.dateRead.ariaLabel,
-        columnActionsMode: 2,
-        maxWidth: 200,
-        minWidth: 100,
-        isSorted: true,
-        isSortedDescending: true,
-        isResizable: true,
-        data: {
-          type: 'date',
-        },
-        onRender: item => item[lists.docs.dateRead.key].slice(0, 10)
-      },
-      {
-        key: lists.docs.dateAck.key,
-        fieldName: lists.docs.dateAck.key,
-        name: lists.docs.dateAck.name,
-        ariaLabel: lists.docs.dateAck.ariaLabel,
-        columnActionsMode: 2,
-        maxWidth: 200,
-        minWidth: 100,
-        isSorted: true,
-        isSortedDescending: true,
-        isResizable: true,
-        data: {
-          type: 'date',
-        },
-        onRender: item => item[lists.docs.dateAck.key].slice(0, 10)
-      },
-      {
-        key: 'buttons',
-        name: '',
-        maxWidth: 250,
-        minWidth: 200,
-        onRender: item => (
-          <ListButtons
-            key={item.id}
-            item={item}
-            onClickRead={() => this.handleClickRead(item)}
-            onClickAck={() => this.handleToggleAck(item)}
-          />
-        ),
-      },
-    ];
+  updateItems = () => this.setState({ items: this.props.items })
 
-    this.setState({ columns });
+  /**
+   * Handles toggling the acknowledgment modal
+   * @param {object} item   - item user is acknowledging
+   */
+  handleToggleAck = (item) => (
+    this.setState({
+      acknowledgeHidden: !this.state.acknowledgeHidden,
+      currentItem: item ? item.Id : null,
+    })
+  )
+
+  /**
+   * Handles clicking the 'Acknowledge' button
+   * from withing the acknowledgment modal
+   */
+  handleClickAck = () => {
+    const data = {
+      [lists.ack.dateAck.key]: new Date().toISOString(),
+      [lists.ack.hasAck.key]: true,
+    };
+
+    this.props.handleUpdateItem(data, this.state.currentItem)
+      .then(this.updateItems)
+      .then(this.handleToggleAck);
+  }
+
+  /**
+   * Handles clicking the 'Read' button
+   * @param {object} item   - item user is reading
+   */
+  handleClickRead = (item) => {
+    if (!item[lists.ack.hasRead.key]) {
+      const data = {
+        [lists.ack.dateRead.key]: new Date().toISOString(),
+        [lists.ack.hasRead.key]: true,
+      };
+      this.props.handleUpdateItem(data, item.Id)
+        .then(this.updateItems);
+    }
   }
 
   /**
@@ -120,9 +159,9 @@ class ListContainer extends Component {
     let newItems = items.slice();
     let newFilteredItems = filteredItems.slice();
     let sortOrder = [
-      lists.docs.dateAck.key,
-      lists.docs.dateRead.key,
-      lists.docs.title.key,
+      lists.ack.dateAck.key,
+      lists.ack.dateRead.key,
+      lists.ack.title.key,
     ];
 
     newColumns.forEach(col => {
@@ -183,9 +222,9 @@ class ListContainer extends Component {
    */
   handleSearch = (userValue) => {
     const filterableFields = [
-      lists.docs.dateAck,
-      lists.docs.dateRead,
-      lists.docs.title,
+      lists.ack.dateAck,
+      lists.ack.dateRead,
+      lists.ack.title,
     ];
 
     const filteredItems = this.state.items.filter(item => (
@@ -201,24 +240,28 @@ class ListContainer extends Component {
 
   render() {
     return (
-      <div className="ms-Grid">
+      <div className="ms-Grid" style={{ margin: '15px 0 60px 0' }}>
         <div className="ms-Grid-row">
           <div className="ms-Grid-col ms-u-sm6">
             <h2>{this.props.title}</h2>
           </div>
-
           <div className="ms-Grid-col ms-u-sm6">
-            <Search onChange={this.handleSearch} />
+            <SearchBox onChange={this.handleSearch} />
           </div>
         </div>
 
         <div className="ms-Grid-row">
           <div className="ms-Grid-col ms-u-sm12">
-            <List
-              items={this.state.filteredItems}
-              columns={this.state.columns}
-              onColumnHeaderClick={this.handleClickColumn}
-            />
+            {
+              this.state.filteredItems.length ?
+                <List
+                  items={this.state.filteredItems}
+                  columns={this.state.columns}
+                  onColumnHeaderClick={this.handleClickColumn}
+                />
+                :
+                <p>No Items Available</p>
+            }
           </div>
         </div>
 
@@ -232,4 +275,4 @@ class ListContainer extends Component {
   }
 }
 
-export default App;
+export default ListContainer;

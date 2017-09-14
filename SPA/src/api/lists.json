@@ -1,6 +1,6 @@
 {
-  "docs": {
-    "listTitle": "Documents",
+  "ack": {
+    "listTitle": "Ack_list",
     "title": {
       "key": "Title",
       "name": "Title",
@@ -26,7 +26,7 @@
       "key": "DocID"
     }
   },
-  "ack": {
-    "listTitle": "Ack_list"
+  "docs": {
+    "listTitle": "Documents"
   }
 }
